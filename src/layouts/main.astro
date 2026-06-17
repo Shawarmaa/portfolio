@@ -1,5 +1,6 @@
 ---
 import "@/styles/global.css"
+import { ClientRouter } from "astro:transitions"
 import { site } from "@/config"
 
 interface Props {
@@ -27,6 +28,8 @@ const ogUrl = ogImage ? new URL(ogImage, Astro.site) : undefined
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="canonical" href={canonical} />
     <meta name="generator" content={Astro.generator} />
+
+    <ClientRouter />
 
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
