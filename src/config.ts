@@ -5,7 +5,7 @@ export const site = {
   name: "Muhammad Abdullah",
   title: "Muhammad Abdullah",
   description:
-    "Software engineer studying CS & Maths at the University of Manchester. I build products people actually use.",
+    "Software engineer studying CS & Maths at the University of Manchester.",
   // Used for OG tags and canonical URLs (must match astro.config `site`).
   url: "https://muhammadabdullah.dev",
   email: "muhammadabdullaham24@gmail.com",
@@ -50,7 +50,7 @@ export const sections: {
   key: "main" | "education" | "awards"
   label: string | null
 }[] = [
-  { key: "main", label: "Experience" },
-  { key: "awards", label: "Achievements" },
-  { key: "education", label: "Education" },
-]
+    { key: "main", label: "Experience" },
+    { key: "awards", label: "Achievements" },
+    { key: "education", label: "Education" },
+  ]
