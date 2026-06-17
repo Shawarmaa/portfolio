@@ -1,0 +1,12 @@
+{
+  // Static-assets-only Worker: serves the prebuilt ./dist, no SSR adapter.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "portfolio",
+  "compatibility_date": "2026-06-17",
+  "assets": {
+    "directory": "./dist"
+  },
+  "observability": {
+    "enabled": true
+  }
+}
