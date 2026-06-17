@@ -46,9 +46,9 @@ const meta = "text-muted-foreground text-sm"
 // Fade only fires when a *link* is hovered (`:has(a:hover)`), so hovering a
 // plain, link-less row changes nothing. The hovered row restores; year never changes.
 const fade =
-  "transition-colors group-has-[a:hover]/list:text-border group-hover/item:!text-foreground"
+  "transition-colors can-hover:group-has-[a:hover]/list:text-border group-hover/item:!text-foreground"
 const fadeMuted =
-  "transition-colors group-has-[a:hover]/list:text-border group-hover/item:!text-muted-foreground"
+  "transition-colors can-hover:group-has-[a:hover]/list:text-border group-hover/item:!text-muted-foreground"
 ---
 
 <ul class="group/list">
@@ -96,7 +96,7 @@ const fadeMuted =
                         width={40}
                         height={40}
                         loading="eager"
-                        class="size-5 shrink-0 translate-y-1 rounded-[5px] object-contain transition-opacity group-has-[a:hover]/list:opacity-30 group-hover/item:!opacity-100"
+                        class="size-5 shrink-0 translate-y-1 rounded-[5px] object-contain transition-opacity can-hover:group-has-[a:hover]/list:opacity-30 group-hover/item:!opacity-100"
                       />
                     ) : hasIcons ? (
                       <span class="size-5 shrink-0" aria-hidden="true" />

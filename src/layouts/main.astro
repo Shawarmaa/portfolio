@@ -1,5 +1,6 @@
 ---
 import "@/styles/global.css"
+import { ClientRouter } from "astro:transitions"
 import { site } from "@/config"
 
 interface Props {
@@ -28,6 +29,8 @@ const ogUrl = ogImage ? new URL(ogImage, Astro.site) : undefined
     <link rel="canonical" href={canonical} />
     <meta name="generator" content={Astro.generator} />
 
+    <ClientRouter />
+
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
 
@@ -45,16 +48,21 @@ const ogUrl = ogImage ? new URL(ogImage, Astro.site) : undefined
     <meta name="twitter:description" content={description} />
     {ogUrl && <meta name="twitter:image" content={ogUrl} />}
 
-    <!-- Dark is the default. Set before paint to avoid a flash, and let the
-         "d" key flip it (a quiet easter-egg; no visible toggle). -->
+    <!-- Dark by default, set before paint to avoid a flash. Press "d" to toggle. -->
     <script is:inline>
       ;(() => {
         const root = document.documentElement
-        try {
-          if (localStorage.getItem("theme") !== "light") root.classList.add("dark")
-        } catch (e) {
-          root.classList.add("dark")
+        // Re-applied on astro:after-swap because client-side routing resets
+        // <html>'s class to the new page's static markup (which has no .dark).
+        const apply = () => {
+          let dark = true
+          try {
+            dark = localStorage.getItem("theme") !== "light"
+          } catch (e) {}
+          root.classList.toggle("dark", dark)
         }
+        apply()
+        document.addEventListener("astro:after-swap", apply)
         addEventListener("keydown", (e) => {
           if (e.key !== "d" || e.metaKey || e.ctrlKey || e.altKey) return
           const t = e.target
