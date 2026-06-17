@@ -15,7 +15,7 @@ const grouped = sections.map((s) => ({
 ---
 
 <Layout>
-  <div class="mx-auto max-w-[640px] px-6 pt-20 pb-12 sm:pt-28 sm:pb-16">
+  <div class="mx-auto max-w-[640px] px-6 pt-10 pb-12 sm:pt-16 sm:pb-16">
     <header>
       <div class="flex items-center justify-between gap-4">
         <h1 class="text-xl font-semibold tracking-tight">{site.name}</h1>
@@ -29,7 +29,7 @@ const grouped = sections.map((s) => ({
           <Socials />
         </div>
       </div>
-      <div class="text-foreground mt-3 space-y-4 leading-relaxed">
+      <div class="text-foreground mt-8 space-y-8 leading-relaxed">
         {
           intro.map((para) => (
             <p>
@@ -54,7 +54,7 @@ const grouped = sections.map((s) => ({
       </div>
     </header>
 
-    <main class="mt-6 space-y-10">
+    <main class="mt-8 space-y-8">
       {
         grouped.map(
           (group, i) =>
