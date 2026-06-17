@@ -4,6 +4,9 @@
 @import "@fontsource-variable/jetbrains-mono";
 
 @custom-variant dark (&:is(.dark *));
+/* Hover effects only on devices with a real pointer, so tapping a link on
+   touch doesn't leave a sticky :hover state behind. */
+@custom-variant can-hover (@media (hover: hover));
 
 @theme inline {
     --font-heading: var(--font-sans);
