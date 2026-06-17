@@ -1,0 +1,24 @@
+---
+import { ArrowUpRight, Navigation } from "lucide-astro"
+
+interface Props {
+  href: string
+}
+
+const { href } = Astro.props
+const external = href.startsWith("http")
+---
+
+<a
+  href={href}
+  target={external ? "_blank" : undefined}
+  rel={external ? "noopener noreferrer" : undefined}
+  class="group hover:border-foreground/30 hover:bg-muted/40 my-6 flex items-center gap-3 rounded-xl border px-4 py-3.5 no-underline transition-colors"
+>
+  <Navigation class="text-foreground size-4 shrink-0 -rotate-12" aria-hidden="true" />
+  <span class="text-foreground flex-1 text-[15px]"><slot /></span>
+  <ArrowUpRight
+    class="text-muted-foreground group-hover:text-foreground size-4 shrink-0 transition-colors"
+    aria-hidden="true"
+  />
+</a>

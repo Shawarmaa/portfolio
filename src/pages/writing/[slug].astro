@@ -1,0 +1,50 @@
+---
+import { getCollection, render } from "astro:content"
+import Layout from "@/layouts/main.astro"
+import ArticleShell from "@/components/ArticleShell.astro"
+import Figure from "@/components/mdx/Figure.astro"
+import Video from "@/components/mdx/Video.astro"
+import LinkCard from "@/components/mdx/LinkCard.astro"
+
+// Writing posts are the only articles. To link a work/timeline row to one, set
+// that row's `href` to /writing/<slug>.
+export async function getStaticPaths() {
+  const writings = await getCollection("writing")
+  return writings
+    .filter((p) => !p.data.draft)
+    .map((entry) => ({ params: { slug: entry.id }, props: { entry } }))
+}
+
+const { entry } = Astro.props
+const { Content, headings } = await render(entry)
+
+// Full, exact date on the article page (the homepage keeps its short form,
+// which is computed separately in src/lib/timeline.ts).
+const fullDate = (d: Date) =>
+  d.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  })
+
+const { title, description, hero, links } = entry.data
+const dateLabel = fullDate(entry.data.date)
+---
+
+<Layout title={title} description={description} ogImage={hero?.src}>
+  <ArticleShell
+    breadcrumb={[
+      { label: "Index", href: "/" },
+      { label: "Writing", href: "/writing" },
+      { label: title },
+    ]}
+    title={title}
+    date={dateLabel}
+    summary={description}
+    hero={hero}
+    links={links}
+    headings={headings}
+  >
+    <Content components={{ Figure, Video, LinkCard }} />
+  </ArticleShell>
+</Layout>

@@ -1,15 +1,79 @@
 ---
 import "@/styles/global.css"
+import { site } from "@/config"
+
+interface Props {
+  title?: string
+  description?: string
+  /* Path to an OG image in /public, or an absolute URL. */
+  ogImage?: string
+}
+
+const { title, description = site.description, ogImage } = Astro.props
+
+const pageTitle = title ? `${title} · ${site.name}` : site.name
+const canonical = new URL(Astro.url.pathname, Astro.site)
+// Only set a share image when the page supplies one (e.g. an article hero).
+const ogUrl = ogImage ? new URL(ogImage, Astro.site) : undefined
 ---
 
-<html lang="en">
+<!doctype html>
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Astro App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="256x256" href="/favicon-256.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href={canonical} />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={site.name} />
+    {ogUrl && <meta property="og:image" content={ogUrl} />}
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content={ogUrl ? "summary_large_image" : "summary"} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    {ogUrl && <meta name="twitter:image" content={ogUrl} />}
+
+    <!-- Dark is the default. Set before paint to avoid a flash, and let the
+         "d" key flip it (a quiet easter-egg; no visible toggle). -->
+    <script is:inline>
+      ;(() => {
+        const root = document.documentElement
+        try {
+          if (localStorage.getItem("theme") !== "light") root.classList.add("dark")
+        } catch (e) {
+          root.classList.add("dark")
+        }
+        addEventListener("keydown", (e) => {
+          if (e.key !== "d" || e.metaKey || e.ctrlKey || e.altKey) return
+          const t = e.target
+          if (
+            t &&
+            (t.tagName === "INPUT" ||
+              t.tagName === "TEXTAREA" ||
+              t.isContentEditable)
+          )
+            return
+          const dark = root.classList.toggle("dark")
+          try {
+            localStorage.setItem("theme", dark ? "dark" : "light")
+          } catch (e) {}
+        })
+      })()
+    </script>
   </head>
-  <body>
+  <body class="overflow-x-clip">
     <slot />
   </body>
 </html>

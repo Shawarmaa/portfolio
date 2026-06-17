@@ -1,0 +1,32 @@
+---
+interface Props {
+  src: string
+  poster?: string
+  caption?: string
+  wide?: boolean
+}
+
+const { src, poster, caption, wide = false } = Astro.props
+---
+
+<figure class={`my-8 ${wide ? "lg:-mx-24" : ""}`}>
+  <div class="bg-muted/40 overflow-hidden rounded-xl">
+    <video
+      src={src}
+      poster={poster}
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      class="w-full">
+    </video>
+  </div>
+  {
+    caption && (
+      <figcaption class="text-muted-foreground mt-3 text-center text-sm">
+        {caption}
+      </figcaption>
+    )
+  }
+</figure>

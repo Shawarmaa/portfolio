@@ -1,0 +1,30 @@
+---
+import { Github, Linkedin, Mail } from "lucide-astro"
+import { socials } from "@/config"
+
+const icons = {
+  github: Github,
+  linkedin: Linkedin,
+  mail: Mail,
+}
+---
+
+<div class="flex items-center gap-1">
+  {
+    socials.map((s) => {
+      const Icon = icons[s.icon]
+      const isHttp = s.href.startsWith("http")
+      return (
+        <a
+          href={s.href}
+          target={isHttp ? "_blank" : undefined}
+          rel={isHttp ? "noopener noreferrer" : undefined}
+          aria-label={s.label}
+          class="text-muted-foreground hover:text-foreground inline-flex size-9 items-center justify-center rounded-md transition-colors"
+        >
+          <Icon class="size-[18px]" aria-hidden="true" />
+        </a>
+      )
+    })
+  }
+</div>

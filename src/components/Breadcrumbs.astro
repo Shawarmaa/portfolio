@@ -1,0 +1,56 @@
+---
+import { ChevronRight } from "lucide-astro"
+
+interface Crumb {
+  label: string
+  href?: string
+}
+
+interface Props {
+  items: Crumb[]
+  class?: string
+}
+
+const { items, class: className } = Astro.props
+---
+
+<nav aria-label="breadcrumb" class={className}>
+  <ol
+    class="text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm break-words sm:gap-2.5"
+  >
+    {
+      items.map((item, i) => (
+        <Fragment>
+          <li class="inline-flex items-center gap-1.5">
+            {item.href && i < items.length - 1 ? (
+              <a
+                href={item.href}
+                class="hover:text-foreground transition-colors"
+              >
+                {item.label}
+              </a>
+            ) : (
+              // Current page; clickable to scroll back to the top.
+              <a
+                href="#"
+                class="text-foreground hover:text-muted-foreground transition-colors"
+                aria-current="page"
+              >
+                {item.label}
+              </a>
+            )}
+          </li>
+          {i < items.length - 1 && (
+            <li
+              role="presentation"
+              aria-hidden="true"
+              class="[&>svg]:size-3.5"
+            >
+              <ChevronRight />
+            </li>
+          )}
+        </Fragment>
+      ))
+    }
+  </ol>
+</nav>

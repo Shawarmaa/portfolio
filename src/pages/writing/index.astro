@@ -1,0 +1,41 @@
+---
+import { getCollection } from "astro:content"
+import Layout from "@/layouts/main.astro"
+import TimelineList from "@/components/TimelineList.astro"
+import Breadcrumbs from "@/components/Breadcrumbs.astro"
+import { writingRow } from "@/lib/timeline"
+
+const rows = (await getCollection("writing"))
+  .filter((p) => !p.data.draft)
+  .map(writingRow)
+
+const breadcrumb = [{ label: "Index", href: "/" }, { label: "Writing" }]
+---
+
+<Layout title="Writing" description="Notes and essays by Muhammad Abdullah.">
+  <div
+    class="mx-auto max-w-[640px] px-6 pt-20 pb-16 sm:pt-28 sm:pb-24 xl:grid xl:max-w-[96rem] xl:grid-cols-[1fr_minmax(0,640px)_1fr] xl:gap-8 xl:px-8"
+  >
+    <aside class="hidden xl:block">
+      <div class="sticky top-10">
+        <Breadcrumbs class="flex h-7 items-center" items={breadcrumb} />
+      </div>
+    </aside>
+
+    <div class="min-w-0 xl:px-6">
+      <Breadcrumbs class="mb-10 xl:hidden" items={breadcrumb} />
+
+      <h1 class="text-xl font-semibold tracking-tight">Writing</h1>
+
+      {
+        rows.length > 0 ? (
+          <div class="mt-6">
+            <TimelineList rows={rows} stagger />
+          </div>
+        ) : (
+          <p class="text-muted-foreground mt-6 text-sm">Nothing here yet.</p>
+        )
+      }
+    </div>
+  </div>
+</Layout>

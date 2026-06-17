@@ -1,0 +1,134 @@
+---
+import { Image } from "astro:assets"
+import { ArrowUpRight } from "lucide-astro"
+import type { TimelineRow } from "@/lib/timeline"
+
+interface Props {
+  rows: TimelineRow[]
+  // Ripple each row in on load (used on the writing list).
+  stagger?: boolean
+}
+
+const { rows, stagger = false } = Astro.props
+
+// Only reserve the icon column if some row has an icon, so a section with no
+// logos (e.g. Awards, Writings) doesn't carry an empty gap.
+const hasIcons = rows.some((r) => r.icon)
+
+// Sort: explicit order ascending, then date descending (dateless rows last).
+const sorted = [...rows].sort(
+  (a, b) =>
+    (a.order ?? 0) - (b.order ?? 0) ||
+    (b.sortDate ?? 0) - (a.sortDate ?? 0),
+)
+
+// Group consecutive rows by year (dateless rows form a single year-less
+// group). Each group is divided by a full-width line; rows inside a group are
+// divided by an inset line (after the gutter).
+type Group = { year: number | null; rows: TimelineRow[] }
+const groups: Group[] = []
+for (const row of sorted) {
+  const last = groups[groups.length - 1]
+  if (last && last.year === row.year) last.rows.push(row)
+  else groups.push({ year: row.year, rows: [row] })
+}
+
+// Running start index per group, for the staggered ripple delay.
+const groupStart: number[] = []
+let acc = 0
+for (const g of groups) {
+  groupStart.push(acc)
+  acc += g.rows.length
+}
+
+// Shared muted style for the three "meta" elements: section label, year, date.
+const meta = "text-muted-foreground text-sm"
+// Fade only fires when a *link* is hovered (`:has(a:hover)`), so hovering a
+// plain, link-less row changes nothing. The hovered row restores; year never changes.
+const fade =
+  "transition-colors group-has-[a:hover]/list:text-border group-hover/item:!text-foreground"
+const fadeMuted =
+  "transition-colors group-has-[a:hover]/list:text-border group-hover/item:!text-muted-foreground"
+---
+
+<ul class="group/list">
+  {
+    groups.map((grp, gi) => (
+      <li class="border-border/60 mr-6 border-b last:border-b-0 lg:mr-0">
+        {grp.rows.map((row, i) => {
+          const { title, subtitle, tab, badge, icon, href, right } = row
+          const Tag = href ? "a" : "div"
+          const notLast = i < grp.rows.length - 1
+          const delay = (groupStart[gi] + i) * 60
+          return (
+            <Tag
+              href={href ?? undefined}
+              target={href?.startsWith("http") ? "_blank" : undefined}
+              rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
+              class:list={["group/item relative flex gap-4", stagger && "animate-rise"]}
+              style={stagger ? `animation-delay:${delay}ms` : undefined}
+            >
+              {/* Hover indicator in the margin, outside the row box. Only
+                  linked rows get one. */}
+              {href && (
+                <ArrowUpRight
+                  class="text-muted-foreground absolute top-1/2 left-full ml-2 hidden size-4 -translate-y-1/2 group-hover/item:block lg:ml-4"
+                  aria-hidden="true"
+                />
+              )}
+
+              {/* Year gutter, printed once per group. Omitted for dateless
+                  groups so those rows sit at the far left. */}
+              {grp.year != null && (
+                <span class={`${meta} w-12 shrink-0 pt-3 tabular-nums`}>
+                  {i === 0 ? grp.year : ""}
+                </span>
+              )}
+
+              <div class:list={["flex-1 py-3", notLast && "border-border/60 border-b"]}>
+                <div class="flex items-baseline gap-4">
+                  <span class="flex min-w-0 flex-1 items-baseline gap-2">
+                    {/* Reserve the icon column even when empty, so titles align. */}
+                    {icon ? (
+                      <Image
+                        src={icon}
+                        alt=""
+                        width={40}
+                        height={40}
+                        loading="eager"
+                        class="size-5 shrink-0 translate-y-1 rounded-[5px] object-contain transition-opacity group-has-[a:hover]/list:opacity-30 group-hover/item:!opacity-100"
+                      />
+                    ) : hasIcons ? (
+                      <span class="size-5 shrink-0" aria-hidden="true" />
+                    ) : null}
+                    <span class="flex min-w-0 flex-col sm:flex-row sm:flex-wrap sm:items-baseline sm:gap-x-2">
+                      <span class={`text-foreground ${fade}`}>{title}</span>
+                      {subtitle && (
+                        <span class={`${meta} ${fadeMuted}`}>{subtitle}</span>
+                      )}
+                      {badge && (
+                        <span class="text-muted-foreground border-border mt-1 inline-block self-start rounded-full border px-1.5 py-px text-[11px] leading-tight sm:mt-0 sm:align-[2px]">
+                          {badge}
+                        </span>
+                      )}
+                    </span>
+                  </span>
+                  <span class={`${meta} shrink-0 tabular-nums ${fadeMuted}`}>
+                    {right}
+                  </span>
+                </div>
+
+                {/* Indented sub-line under the title, part of the same element. */}
+                {tab && (
+                  <div class={`${meta} mt-1 ${hasIcons ? "pl-7" : ""} ${fadeMuted}`}>
+                    {tab}
+                  </div>
+                )}
+              </div>
+            </Tag>
+          )
+        })}
+      </li>
+    ))
+  }
+</ul>

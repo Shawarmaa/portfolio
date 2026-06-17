@@ -1,17 +1,78 @@
 ---
+import { getCollection } from "astro:content"
 import Layout from "@/layouts/main.astro"
-import { Button } from "@/components/ui/button"
+import Socials from "@/components/Socials.astro"
+import TimelineList from "@/components/TimelineList.astro"
+import { workRow } from "@/lib/timeline"
+import { site, intro, sections } from "@/config"
+
+const all = (await getCollection("work")).filter((e) => !e.data.draft)
+
+const grouped = sections.map((s) => ({
+  ...s,
+  rows: all.filter((e) => e.data.section === s.key).map(workRow),
+}))
 ---
 
 <Layout>
-  <div class="flex min-h-svh p-6">
-    <div class="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-      <div>
-        <h1 class="font-medium">Project ready!</h1>
-        <p>You may now add components and start building.</p>
-        <p>We've already added the button component for you.</p>
-        <Button client:load className="mt-2">Button</Button>
+  <div class="mx-auto max-w-[640px] px-6 pt-20 pb-12 sm:pt-28 sm:pb-16">
+    <header>
+      <div class="flex items-center justify-between gap-4">
+        <h1 class="text-xl font-semibold tracking-tight">{site.name}</h1>
+        <div class="-mr-2 flex shrink-0 items-center gap-4">
+          <a
+            href="/writing"
+            class="text-muted-foreground hover:text-foreground text-sm transition-colors"
+          >
+            Writing
+          </a>
+          <Socials />
+        </div>
       </div>
-    </div>
+      <div class="text-foreground mt-3 space-y-4 leading-relaxed">
+        {
+          intro.map((para) => (
+            <p>
+              {para.map((seg) =>
+                seg.href ? (
+                  <a
+                    href={seg.href}
+                    target={seg.href.startsWith("http") ? "_blank" : undefined}
+                    rel={
+                      seg.href.startsWith("http")
+                        ? "noopener noreferrer"
+                        : undefined
+                    }
+                    class="link">{seg.text}</a>
+                ) : (
+                  seg.text
+                ),
+              )}
+            </p>
+          ))
+        }
+      </div>
+    </header>
+
+    <main class="mt-6 space-y-10">
+      {
+        grouped.map(
+          (group, i) =>
+            group.rows.length > 0 && (
+              <section
+                class="animate-rise"
+                style={`animation-delay:${80 + i * 80}ms`}
+              >
+                {group.label && (
+                  <h2 class="text-muted-foreground mb-2 text-sm">
+                    {group.label}
+                  </h2>
+                )}
+                <TimelineList rows={group.rows} />
+              </section>
+            ),
+        )
+      }
+    </main>
   </div>
 </Layout>

@@ -1,13 +1,15 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "shadcn/tailwind.css";
 @import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
     --font-heading: var(--font-sans);
     --font-sans: 'Inter Variable', sans-serif;
+    --font-mono: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, monospace;
+    --color-brand: var(--brand);
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -81,23 +83,26 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+
+    /* The one accent: HubSpot "Get a demo" orange (#FF5C35). Selection highlight. */
+    --brand: oklch(0.685 0.21 33);
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
+    --background: oklch(0.205 0 0);
+    --foreground: oklch(0.97 0 0);
+    --card: oklch(0.245 0 0);
+    --card-foreground: oklch(0.97 0 0);
+    --popover: oklch(0.245 0 0);
+    --popover-foreground: oklch(0.97 0 0);
     --primary: oklch(0.922 0 0);
     --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
+    --secondary: oklch(0.295 0 0);
+    --secondary-foreground: oklch(0.97 0 0);
+    --muted: oklch(0.295 0 0);
+    --muted-foreground: oklch(0.72 0 0);
+    --accent: oklch(0.295 0 0);
+    --accent-foreground: oklch(0.97 0 0);
     --destructive: oklch(0.704 0.191 22.216);
     --border: oklch(1 0 0 / 10%);
     --input: oklch(1 0 0 / 15%);
@@ -115,6 +120,8 @@
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+
+    --brand: oklch(0.71 0.21 35);
 }
 
 @layer base {
@@ -123,8 +130,198 @@
     }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
     }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
     }
+  /* Anchored deep-dive headings clear the viewport top when jumped to. */
+  :target {
+    scroll-margin-top: 6rem;
+    }
+  ::selection {
+    background: color-mix(in oklch, var(--brand) 50%, transparent);
+    }
+  /* Minimal scrollbar: thin, rounded, no track. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklch, var(--foreground) 20%, transparent)
+      transparent;
+    }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+    }
+  ::-webkit-scrollbar-thumb {
+    background-color: color-mix(in oklch, var(--foreground) 20%, transparent);
+    border-radius: 9999px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in oklch, var(--foreground) 35%, transparent);
+    }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Uppercase, tracked, muted section label (benji-style). */
+  .section-label {
+    @apply text-xs font-medium tracking-widest text-muted-foreground uppercase;
+  }
+
+  /* Underline-only link used in prose and the intro. */
+  .link {
+    @apply decoration-muted-foreground/70 underline decoration-dotted decoration-1 underline-offset-[3px];
+  }
+  .link:hover {
+    @apply decoration-solid;
+  }
+
+  /* Deep-dive article typography. Deliberately minimal. */
+  .prose {
+    @apply text-foreground/90 text-[15px] leading-[1.75];
+  }
+  .prose > * + * {
+    @apply mt-5;
+  }
+  .prose h2 {
+    @apply text-foreground mt-14 mb-4 flex items-center gap-4 text-xl font-semibold tracking-tight;
+    /* Land level with the sticky "Index" link (aside top-20 = 5rem); the
+       0.25rem trim offsets the heading's taller line-box so the text aligns. */
+    scroll-margin-top: 4.75rem;
+  }
+  /* Section divider sits inline, to the right of the title. */
+  .prose h2::after {
+    content: "";
+    @apply border-border flex-1 border-t;
+  }
+  .prose h3 {
+    @apply text-foreground mt-10 mb-3 text-base font-semibold;
+    scroll-margin-top: 5rem;
+  }
+  /* The heading's text, wrapped so the highlight hugs it (not the divider
+     line). Padding is offset by negative margin so layout never shifts. */
+  .prose .heading-text {
+    border-radius: 0.375rem;
+    margin: -0.2rem -0.4rem;
+    padding: 0.2rem 0.4rem;
+  }
+  /* Flash the heading when jumped to from the TOC, then fade out. */
+  .prose .heading-flash .heading-text {
+    animation: heading-flash 3.2s ease-out;
+  }
+  /* Acknowledgements stays a real heading (so it lands in the TOC) but renders
+     small and quiet — a trailing note, not a full section. Assumes it is the
+     last section before any footnotes. */
+  .prose h2#acknowledgements {
+    @apply text-muted-foreground mt-14 mb-3 block text-sm font-medium tracking-normal;
+  }
+  .prose h2#acknowledgements::after {
+    display: none;
+  }
+  .prose h2#acknowledgements ~ p {
+    @apply text-muted-foreground text-sm;
+  }
+  .prose h2 + *,
+  .prose h3 + * {
+    @apply mt-0;
+  }
+  .prose a {
+    @apply text-foreground decoration-muted-foreground/70 underline decoration-dotted decoration-1 underline-offset-[3px];
+  }
+  .prose a:hover {
+    @apply decoration-solid;
+  }
+  .prose strong {
+    @apply text-foreground font-semibold;
+  }
+  .prose ul {
+    @apply list-disc space-y-1.5 pl-5 marker:text-muted-foreground/50;
+  }
+  .prose ol {
+    @apply list-decimal space-y-1.5 pl-5 marker:text-muted-foreground;
+  }
+  .prose blockquote {
+    @apply text-muted-foreground border-l-2 pl-4 italic;
+  }
+  .prose hr {
+    @apply my-12 border-t;
+  }
+  /* Inline code. */
+  .prose :not(pre) > code {
+    @apply bg-muted/70 rounded px-1.5 py-0.5 font-mono text-[0.85em];
+  }
+  /* Shiki code blocks. */
+  .prose pre {
+    @apply my-6 overflow-x-auto rounded-xl border p-4 text-[13px] leading-relaxed;
+  }
+  .prose pre code {
+    @apply font-mono;
+  }
+  .prose img {
+    @apply rounded-xl;
+  }
+  /* GFM footnotes — used for inline references that jump to the bottom. */
+  .prose .footnotes {
+    @apply text-muted-foreground mt-14 text-sm;
+  }
+  .prose .footnotes ol {
+    @apply space-y-2;
+  }
+  .prose [data-footnote-ref] {
+    @apply text-foreground font-medium no-underline;
+  }
+  .prose .data-footnote-backref {
+    @apply ml-1 no-underline;
+  }
+  /* Highlight a footnote when jumped to (headings get the flash instead). */
+  .prose .footnotes li:target {
+    @apply rounded transition-colors;
+    background: color-mix(in oklch, var(--foreground) 8%, transparent);
+  }
+
+  /* Shiki dual-theme: swap to the dark palette under .dark. */
+  .dark .astro-code,
+  .dark .astro-code span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--shiki-dark-bg) !important;
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+  }
+}
+
+@layer utilities {
+  /* Gentle entrance used by homepage sections; respects reduced-motion above. */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-rise {
+    animation: rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  /* TOC-jump heading flash: brand wash that fades to nothing. */
+  @keyframes heading-flash {
+    0%,
+    25% {
+      background-color: color-mix(in oklch, var(--brand) 45%, transparent);
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
 }
