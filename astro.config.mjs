@@ -7,6 +7,8 @@ import react from "@astrojs/react"
 import mdx from "@astrojs/mdx"
 import sitemap from "@astrojs/sitemap"
 
+import cloudflare from "@astrojs/cloudflare";
+
 // Update this to your deployed domain.
 const SITE = "https://muhammadabdullah.dev"
 
@@ -43,6 +45,7 @@ function rehypeHeadingText() {
 export default defineConfig({
   site: SITE,
   integrations: [mdx(), react(), sitemap()],
+
   // Astro 6.4+ API: custom plugins go through `processor: unified({...})`.
   // GFM (incl. footnotes) and SmartyPants stay on by default inside unified().
   markdown: {
@@ -55,7 +58,10 @@ export default defineConfig({
       wrap: true,
     },
   },
+
   vite: {
     plugins: [tailwindcss()],
   },
+
+  adapter: cloudflare()
 })
