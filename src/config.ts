@@ -19,8 +19,8 @@ export type IntroSegment = { text: string; href?: string }
 // Each inner array is a paragraph; segments with `href` render as inline links.
 export const intro: IntroSegment[][] = [
   [
-    { text: "Currently in London interning @ " },
-    { text: "HubSpot", href: "https://www.hubspot.com/" },
+    { text: "Currently building AI for audit @ " },
+    { text: "Oblex", href: "https://oblex.ai/" },
     {
       text: ". Previously I've shipped web and native apps to over 20,000 users combined.",
     },
