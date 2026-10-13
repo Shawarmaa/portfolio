@@ -21,9 +21,6 @@ export const intro: IntroSegment[][] = [
   [
     { text: "Currently building AI for audit @ " },
     { text: "Oblex", href: "https://oblex.ai/" },
-    {
-      text: ". Previously I've shipped web and native apps to over 20,000 users combined.",
-    },
   ],
 ]
 
